@@ -46,13 +46,13 @@ def build_model():
     ])
     
     parameters = {
-        'vect__ngram_range': ((1, 1), (1, 2)),
-        'vect__max_df': (0.5, 0.75, 1.0),
-        'vect__max_features': (None, 5000, 10000),
-        'tfidf__use_idf': (True, False),
-        'clf__estimator__n_neighbors':[3,5,9,11],
-        'clf__estimator__weights':['uniform','distance'],
-        'clf__estimator__metric':['euclidean','manhattan']
+        #'vect__ngram_range': ((1, 1), (1, 2)),
+        #'vect__max_df': (0.5, 0.75, 1.0),
+        #'vect__max_features': (None, 5000, 10000),
+        #'tfidf__use_idf': (True, False),
+        'clf__estimator__n_neighbors':[3,5]
+        #'clf__estimator__weights':['uniform','distance'],
+        #'clf__estimator__metric':['euclidean','manhattan']
     }
     
     cv =  GridSearchCV(pipeline, param_grid=parameters)
@@ -68,8 +68,6 @@ def save_model(model, model_filepath):
 	with open(model_filepath,'wb') as f:
 		pickle.dump(model,f)
    
-
-
 def main():
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]

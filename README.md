@@ -1,6 +1,28 @@
 # Disaster Response Pipeline Project
 
-### Instructions:
+ - Skills : 
+
+### Table of Contents
+
+	1. Project Summary
+	2. Installation
+	3. Instructions
+	4. File Description
+
+### 1. Project Summary
+
+This project focus on practice data engineering skills, including building ETL pipeline and ML pipeline using sklearn.   
+
+
+### 2. Installation
+1. sqlachemy
+2. ntlk
+3. sklearn
+4. pickle
+
+
+
+### 3. Instructions
 1. Run the following commands in the project's root directory to set up your database and model.
 
     - To run ETL pipeline that cleans data and stores in database

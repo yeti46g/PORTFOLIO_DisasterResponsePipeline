@@ -57,14 +57,18 @@ def index():
     """
 
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
     category_counts = df.sum()[3:]
     category_names = list(df.sum()[3:].index)
 
+    category_counts_aidRelated = df[df['aid_related']==1].sum()[3:]
+
+    category_counts_NotAidRelated = df[df['aid_related']==0].sum()[3:]
+
+
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
@@ -94,16 +98,58 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message Genres',
+                'title': 'Distribution of Message Categories',
                 'yaxis': {
                     'title': "Count"
                 },
                 'xaxis': {
-                    'title': "Genre"
+                    'title': "Categories"
                 }
             }
 
+        },
+
+        {
+            'data':[
+                Bar(
+                    x=category_names,
+                    y=category_counts_aidRelated
+                    )
+            ],
+
+            'layout':{
+                'title': 'Distribution of Categories for Aid-related Messages',
+                'yaxis':{
+                    'title':"Count"
+                },
+                'xaxis':{
+                    'title':"Categories"
+                }
+
+            },
+
+        },
+        {
+            'data':[
+                Bar(
+                    x=category_names,
+                    y=category_counts_NotAidRelated
+                    )
+            ],
+
+            'layout':{
+                'title': 'Distribution of Categories for Non-aid-related Messages',
+                'yaxis':{
+                    'title':"Count"
+                },
+                'xaxis':{
+                    'title':"Categories"
+                }
+
+            },
+
         }
+
     ]
 
     # encode plotly graphs in JSON

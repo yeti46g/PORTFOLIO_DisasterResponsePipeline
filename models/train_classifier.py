@@ -20,6 +20,16 @@ from sklearn.model_selection import GridSearchCV
 import pickle
 
 def load_data(database_filepath):
+    """ Function to load data from SQLite database
+
+    Input:
+        database_filepath
+
+    Returns:
+         X (str): pandas series contains message texts.
+         Y : dataframe contains 36 category labels and their binary values
+         a list of the 36 label names
+    """
     engine = create_engine('sqlite:///'+database_filepath)
     df = pd.read_sql_table('cleanedData',engine)
     X = df['message']
@@ -28,6 +38,15 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """ Function to tokenize messages
+
+    Input:
+        text : str
+
+    Returns:
+        tokens
+
+    """
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     detected_urls = re.findall(url_regex, text)
     for url in detected_urls:
@@ -39,13 +58,25 @@ def tokenize(text):
 
 
 def build_model():
+    """ Function to build machine learning pipeline
+    Input:
+        None
+
+    Returns:
+        Pretrained model
+
+    """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
         ('clf', MultiOutputClassifier(KNeighborsClassifier()))
     ])
-    
+
     parameters = {
+        # since searching through many hyper parameters on my local machine takes
+        # a significantly long time, here I reduced the search space to only two different numbers
+        # of neighbors in the KNNclassifier
+
         #'vect__ngram_range': ((1, 1), (1, 2)),
         #'vect__max_df': (0.5, 0.75, 1.0),
         #'vect__max_features': (None, 5000, 10000),
@@ -54,33 +85,58 @@ def build_model():
         #'clf__estimator__weights':['uniform','distance'],
         #'clf__estimator__metric':['euclidean','manhattan']
     }
-    
+
     cv =  GridSearchCV(pipeline, param_grid=parameters)
-    
+
     return cv
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """Function to evaluate trained model
+
+    Input:
+        model: trained model
+        X_test: message texts of test data
+        Y_test: labels of test data
+        category_names: list of the 36 category target_names
+
+    Returns:
+        print precision, recall, f1-score and support for each label
+
+    """
     y_pred = model.predict(X_test)
     print(classification_report(Y_test, y_pred,target_names=category_names))
 
 
 def save_model(model, model_filepath):
+    """Function to save trained model to pickle file
+
+    Input:
+        trained model
+
+    Returns:
+        model in pickle file
+
+    """
 	with open(model_filepath,'wb') as f:
 		pickle.dump(model,f)
-   
+
 def main():
+    """ Function to call the previous functions and execute ML pipeline
+    """
+
+
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, category_names = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
-        
+
         print('Building model...')
         model = build_model()
-        
+
         print('Training model...')
         model.fit(X_train, Y_train)
-        
+
         print('Evaluating model...')
         evaluate_model(model, X_test, Y_test, category_names)
 

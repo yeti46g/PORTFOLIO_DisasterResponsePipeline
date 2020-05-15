@@ -117,8 +117,8 @@ def save_model(model, model_filepath):
         model in pickle file
 
     """
-	with open(model_filepath,'wb') as f:
-		pickle.dump(model,f)
+    with open(model_filepath,'wb') as f:
+	       pickle.dump(model,f)
 
 def main():
     """ Function to call the previous functions and execute ML pipeline
